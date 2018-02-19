@@ -14,7 +14,7 @@ export const modes = {
 };
 
 const NUM_STEPS = 10;
-const NUM_OPTIONS = 3;
+const NUM_OPTIONS = 4;
 
 function createStore () {
   return new Vuex.Store({
@@ -29,13 +29,6 @@ function createStore () {
       steps: [],
       currentStep: 0
     },
-    computed: {
-      score (state) {
-        return state.steps
-          .map(({ response, solution }) => response === solution ? 1 : -1)
-          .reduce((a, b) => a + b, 0);
-      }
-    },
     mutations: {
       start (state, mode) {
         state.mode = mode;
@@ -44,7 +37,11 @@ function createStore () {
       },
       guess (state, response) {
         state.steps[ state.currentStep ].response = response;
-        state.currentStep += 1;
+        if (state.currentStep + 1 < state.steps.length) {
+          state.currentStep += 1;
+        } else {
+          state.phase = phases.DONE;
+        }
       }
     }
   });
@@ -55,17 +52,17 @@ function createSteps (numSteps, numOptions, mode) {
   const challenges = Object.keys(pool);
   return randomInts(numSteps, challenges.length).map(i => {
     const challenge = challenges[ i ];
-    const correctOption = pool[ challenge ];
+    const answer = Object.assign({ key: challenge }, pool[ challenge ]);
     const [ answerPosition ] = randomInts(1, numOptions);
     const wrongOptions = randomItems(numOptions, pool)
       .filter(_ => _.key !== challenge)
       .slice(0, numOptions - 1);
     return {
       challenge,
-      key: challenge,
+      answer,
       options: [
         ...wrongOptions.slice(0, answerPosition),
-        correctOption,
+        answer,
         ...wrongOptions.slice(answerPosition, numOptions)
       ]
     };

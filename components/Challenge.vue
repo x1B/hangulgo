@@ -4,16 +4,17 @@
     <button
       v-for="option in step.options"
       class="button--secondary button--option"
+      @click="$emit('select', option)"
       :key="option.key">
-      <span class="option--roman">{{ option.romanization }}</span>
-      <br>
-      <span class="option--ipa">[{{ option.ipa }}]</span>
+      <transcript :transcript="option" />
     </button>
   </div>
 </template>
 
 <script>
+import Transcript from '~/components/Transcript.vue';
 export default {
+  components: { Transcript },
   props: {
     step: {
       type: Object,
@@ -33,10 +34,5 @@ button {
   &:hover * {
     color: white;
   }
-}
-
-.option--roman {
-  font-weight: bold;
-  color: #333;
 }
 </style>

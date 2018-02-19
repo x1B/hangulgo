@@ -1,13 +1,9 @@
 <template>
   <section class="container">
     <div v-if="$store.state.phase.entry">
-      <h1 class="title">
-        <!-- hangul-go! -->
-      </h1>
-      <h2 class="subtitle">
-        <!-- Train Hangul -->
-      </h2>
-      <div class="links">
+      <app-logo />
+
+      <div class="actions">
         <button
           type="button"
           @click.prevent="$store.commit('start', modes.VOWELS)"
@@ -19,20 +15,25 @@
       </div>
     </div>
     <div v-if="$store.state.phase.running">
-      <challenge :step="step" />
+      {{ $store.state.currentStep + 1 }} / {{ $store.state.steps.length }}
+      <challenge
+        :step="step"
+        @select="$store.commit('guess', $event)" />
     </div>
-    <div v-if="$store.state.phase.finished">
-      <p class="score">Score: {{ store.getters.score }}</p>
+    <div v-if="$store.state.phase.done">
+      <result :steps="$store.state.steps" />
     </div>
   </section>
 </template>
 
 <script>
+import AppLogo from '~/components/AppLogo.vue';
 import Challenge from '~/components/Challenge.vue';
+import Result from '~/components/Result.vue';
 import { modes } from '~/store';
 
 export default {
-  components: { Challenge },
+  components: { AppLogo, Challenge, Result },
   computed: {
     modes: () => modes,
     step () {
@@ -51,25 +52,11 @@ export default {
   align-items: center;
   text-align: center;
 }
-
-.title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
+.actions {
   padding-top: 15px;
+}
+
+.button--option {
+  font-size: 1.4rem;
 }
 </style>
