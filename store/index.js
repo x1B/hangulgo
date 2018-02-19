@@ -37,10 +37,10 @@ function createStore () {
       }
     },
     mutations: {
-      start (state) {
-        state.steps = createSteps(NUM_STEPS, NUM_OPTIONS, state.mode);
+      start (state, mode) {
+        state.mode = mode;
+        state.steps = createSteps(NUM_STEPS, NUM_OPTIONS, mode);
         state.phase = phases.RUNNING;
-        console.log('TODO: DELETE ME', state);
       },
       guess (state, response) {
         state.steps[ state.currentStep ].response = response;
@@ -57,8 +57,7 @@ function createSteps (numSteps, numOptions, mode) {
     const challenge = challenges[ i ];
     const correctOption = pool[ challenge ];
     const [ answerPosition ] = randomInts(1, numOptions);
-    console.log('TODO: DELETE ME', randomItems(numOptions, pool));
-    const wrongOptions = randomItems(numOptions, challenges)
+    const wrongOptions = randomItems(numOptions, pool)
       .filter(_ => _.key !== challenge)
       .slice(0, numOptions - 1);
     return {

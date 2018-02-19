@@ -10,8 +10,12 @@
       <div class="links">
         <button
           type="button"
-          @click.prevent="$store.commit('start')"
-          class="button--primary">Start</button>
+          @click.prevent="$store.commit('start', modes.VOWELS)"
+          class="button--primary button--option">Vowels</button>
+        <button
+          type="button"
+          @click.prevent="$store.commit('start', modes.CONSONANTS)"
+          class="button--primary button--option">Consonants</button>
       </div>
     </div>
     <div v-if="$store.state.phase.running">
@@ -25,10 +29,12 @@
 
 <script>
 import Challenge from '~/components/Challenge.vue';
+import { modes } from '~/store';
 
 export default {
   components: { Challenge },
   computed: {
+    modes: () => modes,
     step () {
       const { steps, currentStep } = this.$store.state;
       return steps[ currentStep ];

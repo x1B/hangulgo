@@ -39,6 +39,22 @@ html {
   background-color: #3b8070;
 }
 
+
+button.button--option {
+  border-radius: 0;
+  border-left-width: 0;
+  margin: 0;
+}
+button.button--option:first-of-type {
+  border-left-width: 1px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+button.button--option:last-of-type {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
 .button--secondary {
   border: 1px solid #35495e;
   color: #35495e;
