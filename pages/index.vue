@@ -2,10 +2,10 @@
   <section class="container">
     <div v-if="$store.state.phase.entry">
       <h1 class="title">
-        hangul-go!
+        <!-- hangul-go! -->
       </h1>
       <h2 class="subtitle">
-        Train Hangul
+        <!-- Train Hangul -->
       </h2>
       <div class="links">
         <button
@@ -15,19 +15,25 @@
       </div>
     </div>
     <div v-if="$store.state.phase.running">
-      <p class="challenge">{{ $store.state.challenge }}</p>
+      <challenge :step="step" />
     </div>
     <div v-if="$store.state.phase.finished">
-      <p class="score">Score: </p>
+      <p class="score">Score: {{ store.getters.score }}</p>
     </div>
   </section>
 </template>
 
 <script>
-import AppLogo from '~/components/Challenge.vue';
+import Challenge from '~/components/Challenge.vue';
 
 export default {
-  components: { }
+  components: { Challenge },
+  computed: {
+    step () {
+      const { steps, currentStep } = this.$store.state;
+      return steps[ currentStep ];
+    }
+  }
 }
 </script>
 

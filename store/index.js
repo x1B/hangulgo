@@ -1,4 +1,5 @@
 import Vuex from 'vuex';
+import { CONSONANTS, VOWELS } from '~/lib/hangul';
 
 export const phases = {
   ENTRY: { entry: true },
@@ -7,204 +8,39 @@ export const phases = {
 };
 
 export const modes = {
-  VOWELS: {},
-  CONSONANTS: {},
-  SYLLABLES: {}
+  VOWELS: { pool: VOWELS },
+  CONSONANTS: { pool: CONSONANTS },
+  SYLLABLES: { pool: {} }
 };
 
-// 'ㅏ ㅐ ㅑ ㅒ ㅓ ㅔ ㅕ ㅖ ㅗ ㅘ ㅙ ㅚ ㅛ ㅜ ㅝ ㅞ ㅟ ㅠ ㅡ ㅢ ㅣ'
-export const VOWELS = {
-  'ㅏ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅐ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅑ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅒ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅓ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅔ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅕ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅖ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅗ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅘ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅙ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅚ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅛ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅜ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅝ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅞ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅟ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅠ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅡ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅢ': {
-    'ipa': '',
-    'romanizations': []
-  },
-  'ㅣ': {
-    'ipa': '',
-    'romanizations': []
-  }
-};
-
-// 'ㄱ ㄲ ㄴ ㄷ ㄸ ㄹ ㅁ ㅂ ㅃ ㅅ ㅆ ㅇ ㅈ ㅉ ㅊ ㅋ ㅌ ㅍ ㅎ'
-export const CONSONANTS =
-  {
-    'ㄱ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㄲ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㄴ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㄷ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㄸ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㄹ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅁ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅂ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅃ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅅ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅆ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅇ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅈ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅉ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅊ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅋ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅌ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅍ': {
-      'ipa': '',
-      'romanizations': []
-    },
-    'ㅎ': {
-      'ipa': '',
-      'romanizations': []
-    }
-  };
+const NUM_STEPS = 10;
+const NUM_OPTIONS = 3;
 
 function createStore () {
   return new Vuex.Store({
     state: {
       phase: phases.ENTRY,
-      mode: modes.VOWEL,
+      mode: modes.VOWELS,
       // each challenge consists of
       // - a challenge string,
       // - options (array of strings),
-      // - a response (initially null),
+      // - a response (string, initially null),
       // - and the solution (one of the options).
       steps: [],
       currentStep: 0
     },
     computed: {
       score (state) {
-        return state.steps.map( (challenge, response) => {
-
-        } );
+        return state.steps
+          .map(({ response, solution }) => response === solution ? 1 : -1)
+          .reduce((a, b) => a + b, 0);
       }
     },
     mutations: {
-      enter (state) {
-        state.steps = range(10).map(_ => createStep(state.mode));
+      start (state) {
+        state.steps = createSteps(NUM_STEPS, NUM_OPTIONS, state.mode);
         state.phase = phases.RUNNING;
+        console.log('TODO: DELETE ME', state);
       },
       guess (state, response) {
         state.steps[ state.currentStep ].response = response;
@@ -214,14 +50,47 @@ function createStore () {
   });
 }
 
-function createStep (mode) {
-
+function createSteps (numSteps, numOptions, mode) {
+  const { pool } = mode;
+  const challenges = Object.keys(pool);
+  return randomInts(numSteps, challenges.length).map(i => {
+    const challenge = challenges[ i ];
+    const correctOption = pool[ challenge ];
+    const [ answerPosition ] = randomInts(1, numOptions);
+    console.log('TODO: DELETE ME', randomItems(numOptions, pool));
+    const wrongOptions = randomItems(numOptions, challenges)
+      .filter(_ => _.key !== challenge)
+      .slice(0, numOptions - 1);
+    return {
+      challenge,
+      key: challenge,
+      options: [
+        ...wrongOptions.slice(0, answerPosition),
+        correctOption,
+        ...wrongOptions.slice(answerPosition, numOptions)
+      ]
+    };
+  });
 }
 
-function range (n) {
+function randomItems (n, pool) {
+  const keys = Object.keys(pool);
+  return randomInts(n, keys.length)
+    .map(i => Object.assign({ key: keys[i] }, pool[ keys[i] ]));
+}
+
+function randomInts (n, max) {
+  const unique = n < max;
+  const used = {};
   const xs = new Array(n);
   for (let i = 0; i < n; ++i) {
-    xs[i] = i;
+    const next = Math.round(Math.random() * max);
+    if (unique && used[ next ]) {
+      --i;
+      continue;
+    }
+    used[ next ] = true;
+    xs[i] = next;
   }
   return xs;
 }
