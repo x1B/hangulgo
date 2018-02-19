@@ -9,7 +9,7 @@ export const phases = {
 
 export const modes = {
   VOWELS: { pool: VOWELS },
-  CONSONANTS: { pool: CONSONANTS },
+  CONSONANTS: { pool: CONSONANTS, note: 'IPA notation for initial/medial/final positions' },
   SYLLABLES: { pool: {} }
 };
 
@@ -33,6 +33,7 @@ function createStore () {
       start (state, mode) {
         state.mode = mode;
         state.steps = createSteps(NUM_STEPS, NUM_OPTIONS, mode);
+        state.currentStep = 0;
         state.phase = phases.RUNNING;
       },
       guess (state, response) {
@@ -42,6 +43,10 @@ function createStore () {
         } else {
           state.phase = phases.DONE;
         }
+      },
+      reset (state) {
+        state.phase = phases.ENTRY;
+        state.steps = [];
       }
     }
   });
@@ -80,7 +85,7 @@ function randomInts (n, max) {
   const used = {};
   const xs = new Array(n);
   for (let i = 0; i < n; ++i) {
-    const next = Math.round(Math.random() * max);
+    const next = Math.floor(Math.random() * max);
     if (unique && used[ next ]) {
       --i;
       continue;

@@ -2,7 +2,6 @@
   <section class="container">
     <div v-if="$store.state.phase.entry">
       <app-logo />
-
       <div class="actions">
         <button
           type="button"
@@ -22,6 +21,12 @@
     </div>
     <div v-if="$store.state.phase.done">
       <result :steps="$store.state.steps" />
+      <div class="actions">
+        <button
+          type="button"
+          @click.prevent="$store.commit('reset')"
+          class="button--primary button--option">⤾ Restart</button>
+      </div>
     </div>
   </section>
 </template>

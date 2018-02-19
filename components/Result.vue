@@ -1,11 +1,19 @@
 <template>
   <div>
-    <h1>Score: {{ score }}/{{ maxScore }}</h1>
+    <h1
+      :class="{
+        'result-best': score === maxScore,
+        'result-ok': score/maxScore > 0.8,
+        'result-soso': score/maxScore <= 0.8 && score/maxScore > 0.5,
+        'result-bad': score/maxScore <= 0.5 && score/maxScore > 0.3,
+        'result-terrible': score/maxScore <= 0.3
+      }"
+    >{{ score }}/{{ maxScore }}</h1>
     <br>
     <table>
       <thead>
         <tr>
-          <th>Challenge</th>
+          <th/>
           <th>Answer</th>
           <th>Correct</th>
           <th>Score</th>
@@ -30,7 +38,7 @@
               v-else
               :transcript="step.answer" />
           </td>
-          <td>{{ stepResults[ step.challenge ] ? 1 : -1 }}</td>
+          <td>{{ stepResults[ step.challenge ] ? 1 : '' }}</td>
         </tr>
       </tbody>
     </table>
@@ -73,17 +81,36 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$color-correct: #393;
+$color-mistake: #933;
+
+$color-best: $color-correct;
+$color-ok: #696;
+$color-soso: #996;
+$color-bad: #966;
+$color-terrible: $color-mistake;
+
+h1 {
+  font-size: 3rem;
+  &.result-best { color: $color-best; }
+  &.result-ok { color: $color-ok; }
+  &.result-soso { color: $color-soso; }
+  &.result-bad { color: $color-bad; }
+  &.result-terrible { color: $color-terrible; }
+}
+
+th { padding-left: 10px; }
 .challenge {
   font-size: 2em;
 }
-.step--incorrect {
+.step--mistake {
   .response {
-    color: #933;
+    color: $color-mistake
   }
 }
 .step--correct {
   .response, .answer {
-    color: #393;
+    color: $color-correct;
   }
 }
 </style>
