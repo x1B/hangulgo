@@ -1,34 +1,33 @@
 <template>
   <section class="container">
-    <div>
-      <app-logo/>
+    <div v-if="$store.state.phase.entry">
       <h1 class="title">
-        hangulgo
+        hangul-go!
       </h1>
       <h2 class="subtitle">
         Train Hangul
       </h2>
       <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green">Documentation</a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey">GitHub</a>
+        <button
+          type="button"
+          @click.prevent="$store.commit('start')"
+          class="button--primary">Start</button>
       </div>
+    </div>
+    <div v-if="$store.state.phase.running">
+      <p class="challenge">{{ $store.state.challenge }}</p>
+    </div>
+    <div v-if="$store.state.phase.finished">
+      <p class="score">Score: </p>
     </div>
   </section>
 </template>
 
 <script>
-import AppLogo from '~/components/AppLogo.vue'
+import AppLogo from '~/components/Challenge.vue';
 
 export default {
-  components: {
-    AppLogo
-  }
+  components: { }
 }
 </script>
 
