@@ -11,6 +11,10 @@
           type="button"
           @click.prevent="$store.commit('start', modes.CONSONANTS)"
           class="button--primary button--option">Consonants</button>
+        <button
+          type="button"
+          @click.prevent="$store.commit('start', modes.SYLLABLES)"
+          class="button--primary button--option">Syllables</button>
       </div>
     </div>
     <div v-if="$store.state.phase.running">
@@ -32,6 +36,9 @@
 </template>
 
 <script>
+import Vue from 'vue';
+Vue.config.productionTip = false;
+
 import AppLogo from '~/components/AppLogo.vue';
 import Challenge from '~/components/Challenge.vue';
 import Result from '~/components/Result.vue';

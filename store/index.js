@@ -1,16 +1,16 @@
 import Vuex from 'vuex';
-import { CONSONANTS, VOWELS } from '~/lib/hangul';
+import { CONSONANTS, VOWELS, WORDS } from '~/lib/hangul';
+
+export const modes = {
+  VOWELS,
+  CONSONANTS,
+  WORDS
+};
 
 export const phases = {
   ENTRY: { entry: true },
   RUNNING: { running: true },
   DONE: { done: true }
-};
-
-export const modes = {
-  VOWELS: { pool: VOWELS },
-  CONSONANTS: { pool: CONSONANTS, note: 'IPA notation for initial/medial/final positions' },
-  SYLLABLES: { pool: {} }
 };
 
 const NUM_STEPS = 10;
@@ -53,31 +53,34 @@ function createStore () {
 }
 
 function createSteps (numSteps, numOptions, mode) {
-  const { pool } = mode;
-  const challenges = Object.keys(pool);
-  return randomInts(numSteps, challenges.length).map(i => {
-    const challenge = challenges[ i ];
-    const answer = Object.assign({ key: challenge }, pool[ challenge ]);
-    const [ answerPosition ] = randomInts(1, numOptions);
+  const { pool, fields: [ CHALLENGE_FIELD, ...ANSWER_FIELDS ] } = mode;
+  const toOption = it => Object.assign(
+    { challenge: it[ CHALLENGE_FIELD ] },
+    ...ANSWER_FIELDS.map(f => ({ [f]: it[f] }))
+  );
+  return randomInts(numSteps, pool.length).map(i => {
+    const solution = toOption(pool[ i ]);
+    const { challenge } = solution;
     const wrongOptions = randomItems(numOptions, pool)
-      .filter(_ => _.key !== challenge)
+      .filter(_ => _[ CHALLENGE_FIELD ] !== challenge)
+      .map(toOption)
       .slice(0, numOptions - 1);
+    const [ solutionPosition ] = randomInts(1, numOptions);
+
     return {
-      challenge,
-      answer,
+      solution,
       options: [
-        ...wrongOptions.slice(0, answerPosition),
-        answer,
-        ...wrongOptions.slice(answerPosition, numOptions)
-      ]
+        ...wrongOptions.slice(0, solutionPosition),
+        solution,
+        ...wrongOptions.slice(solutionPosition, numOptions)
+      ],
+      response: null
     };
   });
 }
 
-function randomItems (n, pool) {
-  const keys = Object.keys(pool);
-  return randomInts(n, keys.length)
-    .map(i => Object.assign({ key: keys[i] }, pool[ keys[i] ]));
+function randomItems (n, list) {
+  return randomInts(n, list.length).map(i => list[i]);
 }
 
 function randomInts (n, max) {

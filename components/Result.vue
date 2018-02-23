@@ -21,24 +21,24 @@
       </thead>
       <tbody>
         <tr
-          v-for="step in steps"
+          v-for="(step, i) in steps"
           :key="step.challenge"
           :class="{
-            'step--correct': stepResults[ step.challenge ],
-            'step--mistake': !stepResults[ step.challenge ]
+            'step--correct': stepResults[ i ],
+            'step--mistake': !stepResults[ i ]
           }"
         >
-          <td class="challenge">{{ step.challenge }}</td>
+          <td class="challenge">{{ step.solution.challenge }}</td>
           <td class="response">
             <transcript :transcript="step.response" />
           </td>
           <td class="answer">
-            <span v-if="stepResults[ step.challenge ]">✔</span>
+            <span v-if="stepResults[ i ]">✔</span>
             <transcript
               v-else
-              :transcript="step.answer" />
+              :transcript="step.solution" />
           </td>
-          <td>{{ stepResults[ step.challenge ] ? 1 : '' }}</td>
+          <td>{{ stepResults[ i ] ? 1 : '' }}</td>
         </tr>
       </tbody>
     </table>
@@ -62,8 +62,9 @@ export default {
   computed: {
     score () {
       return this.$store.state.steps
-        .map(({ response: { key }, challenge }) =>
-          key === challenge ? SCORE_CORRECT : SCORE_MISTAKE)
+        .map(({ response, challenge }) =>
+          response.challenge === challenge ? SCORE_CORRECT : SCORE_MISTAKE
+        )
         .reduce((a, b) => a + b, 0);
     },
     maxScore () {
@@ -71,10 +72,7 @@ export default {
     },
     stepResults () {
       return this.$store.state.steps
-        .map(({ response: { key }, challenge }) =>
-          ({ challenge, isCorrect: key === challenge }))
-        .reduce( (res, next) =>
-          Object.assign(res, { [next.challenge]: next.isCorrect }), {} );
+        .map(_ => _.solution.challenge === _.response.challenge);
     }
   }
 }

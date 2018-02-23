@@ -1,11 +1,11 @@
 <template>
   <div class="challenge">
-    <h1>{{ step.challenge }}</h1>
+    <h1>{{ step.solution.challenge }}</h1>
     <button
       v-for="option in step.options"
       class="button--secondary button--option"
       @click="$emit('select', option)"
-      :key="option.key">
+      :key="option.challenge">
       <transcript :transcript="option" />
     </button>
   </div>
